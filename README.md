@@ -1,73 +1,43 @@
-# React + TypeScript + Vite
+# agent-template-apps-frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript 기반 프론트엔드 애플리케이션
 
-Currently, two official plugins are available:
+## 기술 스택
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+React 19 · TypeScript · Vite · Tailwind CSS · shadcn/ui · Jotai · jotai-tanstack-query · Axios · react-i18next · lucide-react · Streamdown
 
-## React Compiler
+## 시작하기
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 사전 요구사항
 
-## Expanding the ESLint configuration
+- Node.js 18+
+- pnpm
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 설치 및 실행
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+```bash
+# 패키지 설치
+pnpm install
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+# 개발 서버 실행
+pnpm dev
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# 프로덕션 빌드
+pnpm build
+
+# 빌드 미리보기
+pnpm preview
+
+# 린트
+pnpm lint
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 상세 문서
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| 문서 | 설명 |
+|------|------|
+| [CLAUDE.md](./CLAUDE.md) | 프로젝트 개요 및 핵심 규칙 |
+| [코딩 표준 / 디렉토리 구조](./.claude/rules/coding-standards.md) | 디렉토리 구조, 네이밍, 컴포넌트 책임 분리, Mock 데이터 규칙 |
+| [상태 관리 패턴](./.claude/rules/state-management.md) | Jotai 클라이언트 상태, jotai-tanstack-query API 상태 패턴 |
+| [Git 컨벤션](./.claude/rules/git-convention.md) | 브랜치 네이밍, 커밋 메시지 포맷 |
+| [에이전트 워크플로우](./.claude/rules/agent-workflow.md) | Foundation → Publishing → UI 3단계 작업 프로세스 |
