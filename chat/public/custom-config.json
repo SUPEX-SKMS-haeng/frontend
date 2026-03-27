@@ -1,0 +1,6 @@
+{
+  "NODE_ENV": "local",
+  "AUTH_TYPE": "basic",
+  "ADOTBIZ_CMMN_API_URL": "https://stg.adotbiz.ai/cmmn/api/v1",
+  "LANDING_URL": "https://stg.adotbiz.ai/cmmn/sso/dev/login?scode=skon-advai"
+}

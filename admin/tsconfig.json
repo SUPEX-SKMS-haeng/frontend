@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@shared/*": ["../shared/*"]
+      // "@shared/*": ["./src/shared/*"] // 만약 shared 폴더를 서비스 src 내에 넣는 경우 이 주석을 해제하고 위의 코드를 주석 처리
+    }
+  },
+  "include": ["src", "../shared"]
+  // "include": ["src", "./src/shared"] // 만약 shared 폴더를 서비스 src 내에 넣는 경우 이 주석을 해제하고 위의 코드를 주석 처리
+}
