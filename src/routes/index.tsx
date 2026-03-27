@@ -1,29 +1,61 @@
-import { createBrowserRouter, Outlet } from 'react-router-dom'
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Navigate,
+  Outlet,
+  Route,
+} from 'react-router-dom';
+import { ProtectedRoute } from '@/routes/ProtectedRoute';
+import Login from '@/pages/Login';
+import NotFoundPage from '@/pages/NotFoundPage';
+import ForbiddenPage from '@/pages/ForbiddenPage';
+import ChatLayout from '@/components/layout/chat/ChatLayout';
+import AdminLayout from '@/components/layout/admin/AdminLayout';
+import Chat from '@/components/features/chat/Chat';
+import Dashboard from '@/components/features/admin/dashboard/Dashboard';
+import Organizations from '@/components/features/admin/organizations/Organizations';
+import Users from '@/components/features/admin/users/Users';
+import Deployments from '@/components/features/admin/deployments/Deployments';
 
-import ChatLayout from '@/components/layout/ChatLayout'
-import Chat from '@/components/features/chat/Chat'
-import ProtectedRoute from '@/routes/ProtectedRoute'
-import NotFoundPage from '@/pages/NotFoundPage'
-import ForbiddenPage from '@/pages/ForbiddenPage'
+export const router = createBrowserRouter(
+  createRoutesFromElements(
+    <>
+      <Route path='/login' element={<Login />} />
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: (
-      <ProtectedRoute>
-        <ChatLayout>
-          <Outlet />
-        </ChatLayout>
-      </ProtectedRoute>
-    ),
-    children: [
-      { index: true, element: <Chat /> },
-      { path: 'chat', element: <Chat /> },
-      { path: 'chat/:chatId', element: <Chat /> },
-    ],
-  },
-  { path: '/403', element: <ForbiddenPage /> },
-  { path: '*', element: <NotFoundPage /> },
-])
+      {/* Chat routes */}
+      <Route
+        path='/'
+        element={
+          <ProtectedRoute>
+            <ChatLayout>
+              <Outlet />
+            </ChatLayout>
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Chat />} />
+        <Route path='chat' element={<Chat />} />
+        <Route path='chat/:chatId' element={<Chat />} />
+      </Route>
 
-export default router
+      {/* Admin routes */}
+      <Route
+        path='/admin'
+        element={
+          <ProtectedRoute requireAdmin>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to='/admin/dashboard' replace />} />
+        <Route path='dashboard' element={<Dashboard />} />
+        <Route path='organizations' element={<Organizations />} />
+        <Route path='users' element={<Users />} />
+        <Route path='deployments' element={<Deployments />} />
+      </Route>
+
+      <Route path='/403' element={<ForbiddenPage />} />
+      <Route path='*' element={<NotFoundPage />} />
+    </>
+  )
+);
