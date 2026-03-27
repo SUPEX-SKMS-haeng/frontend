@@ -1,19 +1,9 @@
-# API Connect — 백엔드 API → 프론트엔드 연동
+# API 연동 절차
 
-백엔드 FastAPI 소스를 읽고, 프론트엔드 타입/API/상태관리/훅/컴포넌트 연결까지
-Foundation → UI 전 과정을 순서대로 수행한다.
+백엔드 FastAPI 소스를 분석하여 프론트엔드 타입/API/상태관리/훅/컴포넌트를 연결하는 절차.
+Foundation → UI 순서를 반드시 지킨다.
 
-## 사용법
-
-`/api-connect $ARGUMENTS`
-
-예시:
-
-- `/api-connect admin user` — admin 앱의 user 도메인 전체 탐색
-- `/api-connect chat chat` — chat 앱의 chat 도메인
-- `/api-connect admin user getUserById` — 특정 API만 지정
-
-**첫 번째 인자는 대상 앱(admin | chat)**, 두 번째 인자는 도메인명.
+> API 연동 작업 시 **대상 앱(admin | chat)**과 **도메인명**을 먼저 확인한다.
 
 ---
 
@@ -22,7 +12,7 @@ Foundation → UI 전 과정을 순서대로 수행한다.
 ### 파일 탐색 (FastAPI 기준)
 
 CLAUDE.md의 "백엔드 연동 정보"에서 경로를 참조한다.
-도메인명만 받은 경우 아래 순서로 탐색:
+도메인명 기준 아래 순서로 탐색:
 
 1. `{백엔드 루트}/app/api/routes/{domain}.py`
 2. `{백엔드 루트}/app/service/model/{domain}.py`
@@ -45,16 +35,11 @@ CLAUDE.md의 "백엔드 연동 정보"에서 경로를 참조한다.
 | Response Model | `UserResponse`, `List[UserResponse]` |
 | 인증           | `Depends(get_current_user)` 여부     |
 
-추출 결과를 출력하고 확인 요청. **다음 단계 진행 전 승인 필수.**
-
 ---
 
 ## Step 2 — types/ 정의
 
-위치: `{app}/src/types/{domain}.ts`
-
-- 공통 타입(여러 앱에서 사용)은 `shared/types/`에 배치
-- 앱 전용 타입은 해당 앱의 `src/types/`에 배치
+위치: `{app}/src/types/{domain}.ts` — 공통 타입은 `shared/types/`
 
 규칙:
 
@@ -106,8 +91,6 @@ export interface GetUserListParams {
 }
 ```
 
-작성 후 코드 출력 및 확인 요청. **승인 전 다음 단계 금지.**
-
 ---
 
 ## Step 3 — api/ 정의
@@ -125,15 +108,15 @@ export interface GetUserListParams {
 
 ```typescript
 // 예시: admin/src/api/user.ts
-import { axiosInstance } from "@shared/lib/axios";
+import { axiosInstance } from '@shared/lib/axios';
 import type {
   User,
   GetUsersResponse,
   GetUserListParams,
   CreateUserBody,
-} from "@/types/user";
+} from '@/types/user';
 
-const URL_PREFIX = "/users";
+const URL_PREFIX = '/users';
 
 export const getUserList = async (
   params: GetUserListParams
@@ -148,8 +131,6 @@ export const createUser = async (body: CreateUserBody): Promise<User> => {
 };
 ```
 
-작성 후 코드 출력 및 확인 요청. **승인 전 다음 단계 금지.**
-
 ---
 
 ## Step 4 — store/ 클라이언트 상태 정의
@@ -157,9 +138,7 @@ export const createUser = async (body: CreateUserBody): Promise<User> => {
 위치: `{app}/src/store/{domain}UI.ts`
 
 - 규칙 및 예시는 @.claude/rules/state-management.md "클라이언트 상태 — Jotai" 참조
-- 해당 도메인에 공유할 클라이언트 상태가 없으면 이 Step은 생략 가능
-
-작성 후 코드 출력 및 확인 요청. **승인 전 다음 단계 금지.**
+- 해당 도메인에 공유할 클라이언트 상태가 없으면 생략 가능
 
 ---
 
@@ -169,13 +148,8 @@ export const createUser = async (body: CreateUserBody): Promise<User> => {
 
 - `atomWithQuery`/`atomWithMutation` 정의 규칙은 @.claude/rules/state-management.md 참조
 - `queryClient`는 `@shared/lib/queryClient`에서 import
-
-추가 규칙:
-
 - 기존 Mock 훅의 반환 인터페이스를 최대한 유지하여 컴포넌트 변경 최소화
 - isLoading, error 상태 포함
-
-작성 후 코드 출력 및 확인 요청. **승인 전 다음 단계 금지.**
 
 ---
 
@@ -185,17 +159,13 @@ export const createUser = async (body: CreateUserBody): Promise<User> => {
 
 - 분리 기준은 @.claude/rules/coding-standards.md "hooks/ 파일 분류" 참조
 - API 호출이 필요한 핸들러는 Step 5의 API atom을 import하여 사용
-- 해당 도메인에 핸들러 훅이 필요 없으면 이 Step은 생략 가능
-
-작성 후 코드 출력 및 확인 요청. **승인 전 다음 단계 금지.**
+- 해당 도메인에 핸들러 훅이 필요 없으면 생략 가능
 
 ---
 
 ## Step 7 — 컴포넌트 연결
 
 Mock 데이터로 구현된 컴포넌트를 실제 백엔드 API로 교체하여 연동을 완성한다.
-
-대상 컴포넌트: Step 5, 6에서 작성한 훅을 사용하는/사용할 컴포넌트를 자동 탐색하여 목록을 출력하고, 사용자가 연결할 컴포넌트를 선택.
 
 작업 내용:
 
@@ -214,8 +184,6 @@ Mock 데이터로 구현된 컴포넌트를 실제 백엔드 API로 교체하여
 - 마크업/레이아웃 구조 변경
 - 복합/공유 로직을 컴포넌트 안에 직접 작성 (단순 로직은 내부 OK)
 - `any` 타입 사용
-
-작성 후 변경된 부분만 diff 형태로 출력 및 최종 확인 요청.
 
 ---
 
@@ -239,7 +207,6 @@ Mock 데이터로 구현된 컴포넌트를 실제 백엔드 API로 교체하여
 ## 주의사항
 
 - 백엔드 경로를 찾을 수 없으면 사용자에게 경로를 질문
-- 각 Step마다 사용자 승인을 받고 다음으로 진행
 - 도메인 전체가 아닌 특정 API만 추가하는 경우, 기존 파일에 추가 (새 파일 생성 X)
 - store에 공유할 클라이언트 상태가 없으면 Step 4 생략 가능
 - 핸들러 훅이 불필요하면 Step 6 생략 가능

@@ -56,4 +56,5 @@ Jotai · jotai-tanstack-query · TanStack Query · Axios · Tailwind CSS · luci
 - 코딩 표준 / 디렉토리 구조 @.claude/rules/coding-standards.md
 - 상태 관리 패턴 @.claude/rules/state-management.md
 - Git 컨벤션 @.claude/rules/git-convention.md
+- API 연동 절차 @.claude/rules/api-connect.md
 - 에이전트 팀 운영 @.claude/rules/agent-workflow.md
