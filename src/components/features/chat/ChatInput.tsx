@@ -1,64 +1,115 @@
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { SendHorizontal, Square } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import type { KeyboardEvent } from 'react';
+import { ArrowUp, Square } from 'lucide-react';
+import { useChatSendHandler } from '@/hooks/chat/useChatSendHandler';
+import { useAtom, useAtomValue } from 'jotai';
+import {
+  chatDataAtom,
+  chatFamilyAtom,
+  currentChatIdAtom,
+  selectedModelAtom,
+} from '@/store/chat/chat';
+import { useChatScrollHandler } from '@/hooks/chat/chatScrollHandler';
 
-interface ChatInputProps {
-  isGenerating?: boolean
-  onStop?: () => void
-  onSubmit?: (value: string) => void
-}
+const ChatInput = () => {
+  const currentChatId = useAtomValue(currentChatIdAtom);
+  const chatData = useAtomValue(chatFamilyAtom(currentChatId));
+  const [, setChatData] = useAtom(chatDataAtom);
+  const isGenerating = chatData.isGenerating;
+  const selectedModel = useAtomValue(selectedModelAtom);
 
-const ChatInput = ({ isGenerating = false, onStop, onSubmit }: ChatInputProps) => {
-  const { t } = useTranslation()
-  const [value, setValue] = useState('')
+  const { sendMessage, cancelMessage } = useChatSendHandler(currentChatId);
+  const { scrollToBottom } = useChatScrollHandler();
 
-  const handleSubmit = () => {
-    if (value.trim() && !isGenerating) {
-      onSubmit?.(value.trim())
-      setValue('')
+  const [value, setValue] = useState('');
+  // isGenerating 상태일 때는 항상 버튼 활성화 (중지 버튼이므로)
+  const isEnabled = selectedModel && (isGenerating || value.trim().length > 0);
+  const isInputDisabled = isGenerating || !selectedModel;
+
+  const setUserInput = (value: string) => {
+    setChatData({
+      id: currentChatId,
+      data: {
+        userInput: value,
+      },
+    });
+  };
+
+  const handleSend = () => {
+    if (value.trim().length > 0) {
+      sendMessage(value);
+      scrollToBottom();
+      setUserInput('');
+      setValue('');
     }
-  }
+  };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleCancel = () => {
+    cancelMessage(currentChatId);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    // 생성 중일 때는 엔터키 동작 방지
+    if (isGenerating) {
+      return;
+    }
+
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSubmit()
+      e.preventDefault();
+      handleSend();
     }
-  }
+  };
+
+  useEffect(() => {
+    console.log(selectedModel);
+  }, [selectedModel]);
 
   return (
-    <div className="flex w-full items-end gap-2 rounded-xl border border-border bg-background p-3 shadow-sm transition-colors focus-within:border-ring">
-      <textarea
-        className="flex-1 resize-none bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
-        rows={2}
-        placeholder={t('chat.inputPlaceholder')}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onKeyDown={handleKeyDown}
-      />
-      {isGenerating ? (
-        <button
-          className="flex shrink-0 items-center gap-1.5 rounded-lg bg-destructive px-3 py-2 text-sm text-destructive-foreground transition-colors hover:bg-destructive/90 focus:outline-none focus:ring-2 focus:ring-ring active:bg-destructive/80"
-          onClick={onStop}
-        >
-          <Square className="h-4 w-4" />
-          <span>{t('chat.stop')}</span>
-        </button>
-      ) : (
-        <button
-          className={`shrink-0 rounded-lg p-2 transition-colors focus:outline-none focus:ring-2 focus:ring-ring ${
-            value.trim()
-              ? 'bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80'
-              : 'cursor-not-allowed bg-muted text-muted-foreground'
+    <div className='flex-shrink-0 px-8 pt-6 pb-8 bg-white'>
+      <div className='max-w-3xl mx-auto'>
+        <div
+          className={`flex items-center gap-3 px-5 py-3.5 rounded-xl border transition-all ${
+            !selectedModel
+              ? 'bg-neutral-100 border-neutral-200/60 opacity-60 cursor-not-allowed'
+              : 'bg-neutral-50 border-neutral-200/60 shadow-sm hover:shadow-md hover:border-neutral-300/60'
           }`}
-          disabled={!value.trim()}
-          onClick={handleSubmit}
         >
-          <SendHorizontal className="h-4 w-4" />
-        </button>
-      )}
+          <input
+            type='text'
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={
+              !selectedModel
+                ? '메시지를 입력할 수 없습니다.'
+                : '메시지를 입력하세요.'
+            }
+            className={`flex-1 bg-transparent text-[15px] placeholder:text-neutral-400 focus:outline-none ${
+              !selectedModel
+                ? 'text-neutral-400 cursor-not-allowed'
+                : 'text-neutral-900'
+            }`}
+            disabled={isInputDisabled}
+          />
+          <button
+            onClick={isGenerating ? handleCancel : handleSend}
+            disabled={!isEnabled || isGenerating}
+            className={`flex-shrink-0 p-2.5 rounded-lg transition-all ${
+              isEnabled && !isGenerating
+                ? 'text-neutral-900 bg-neutral-200 cursor-pointer hover:bg-neutral-300'
+                : 'text-neutral-400 cursor-not-allowed'
+            }`}
+          >
+            {isGenerating ? (
+              <Square className='w-4 h-4 fill-current' />
+            ) : (
+              <ArrowUp className='w-4 h-4' />
+            )}
+          </button>
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default ChatInput
+export default ChatInput;

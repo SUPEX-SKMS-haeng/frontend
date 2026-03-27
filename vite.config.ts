@@ -9,5 +9,16 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    dedupe: ['react', 'react-dom', 'axios', 'clsx', 'tailwind-merge'],
+  },
+  server: {
+    port: 3000,
+    open: true,
+    proxy: {
+      '/api/v1': {
+        target: 'http://0.0.0.0:8000',
+        changeOrigin: true,
+      },
+    },
   },
 })
