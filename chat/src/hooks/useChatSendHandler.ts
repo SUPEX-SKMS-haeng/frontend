@@ -18,6 +18,7 @@ import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { chatCancelApi, chatSimpleApi, chatStreamApi } from '@/api/chat';
+import { agentStreamApi, IAgentRequest } from '@/api/agent';
 import { useChatDataHandler } from '@/hooks/useChatDataHandler';
 import { useToast } from './useToast';
 import { v7 as uuidv7 } from 'uuid';
@@ -215,7 +216,8 @@ export const useChatSendHandler = (chatId: string) => {
 
     for (const dataLine of lines) {
       if (!dataLine.trim().startsWith('data: ')) continue;
-      const jsonString = dataLine.replace(/^data: /, '');
+      const jsonString = dataLine.replace(/^data: /, '').trim();
+      if (jsonString === '[DONE]') continue;
 
       try {
         const rawJson = JSON.parse(jsonString);
@@ -387,21 +389,16 @@ export const useChatSendHandler = (chatId: string) => {
           await parseMessage(streamValue, targetChatId);
         };
 
-        if (useStream) {
-          await chatStreamApi(
-            messages,
-            messageInfo,
-            partialParseMessage,
-            abortControllerRef.current?.signal
-          );
-        } else {
-          chatSimpleApiResponse = await chatSimpleApi(
-            messages,
-            messageInfo,
-            partialParseMessage,
-            abortControllerRef.current?.signal
-          );
-        }
+        await agentStreamApi(
+          {
+            query: messages[messages.length - 1]?.content ?? '',
+            chatHistory: messages.slice(0, -1),
+            agentName: 'rag',
+            version: 'v2',
+          },
+          partialParseMessage,
+          abortControllerRef.current?.signal
+        );
       }
     } catch (error: any) {
       console.error(error);
@@ -419,6 +416,9 @@ export const useChatSendHandler = (chatId: string) => {
       lastUpdateTimeRef.current = 0;
       haltLoadingMessage();
       console.log('isGenerating :: false');
+
+      // 사이드바 히스토리 즉시 갱신
+      window.dispatchEvent(new Event('agent-history-refresh'));
 
       if (chatSimpleApiResponse) {
         setAiMessageData({

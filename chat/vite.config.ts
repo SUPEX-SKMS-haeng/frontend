@@ -23,8 +23,17 @@ export default defineConfig({
     port: 3000,
     open: true,
     proxy: {
+      '/api/v1/agent': {
+        target: 'http://0.0.0.0:8006', // backend-agent
+        changeOrigin: true,
+      },
+      '/api/v1/auth': {
+        target: 'http://0.0.0.0:8001', // backend-auth
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/v1\/auth/, '/api/v1'),
+      },
       '/api/v1': {
-        target: 'http://0.0.0.0:8000', // local backend gateway
+        target: 'http://0.0.0.0:8080', // llm-gateway (직접)
         changeOrigin: true,
       },
       '/admin': {

@@ -1,15 +1,7 @@
-import ModelSelector from './ModelSelector';
-import GroupSelector from './GroupSelector';
-
-interface TopBarProps {
-  onGroupChange?: () => void;
-}
-
-const TopBar = ({ onGroupChange }: TopBarProps) => {
+const TopBar = () => {
   return (
     <header className='flex-shrink-0 flex items-center justify-between h-14 px-6 bg-neutral-50/30 backdrop-blur-sm border-b border-neutral-200/40'>
-      <ModelSelector />
-      <GroupSelector onGroupChange={onGroupChange} />
+      <span className='text-sm font-medium text-neutral-600'>Agent Chat</span>
     </header>
   );
 };

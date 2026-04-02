@@ -62,4 +62,14 @@ export const abortFamilyAtom = atomFamily((id: string) =>
   atom((get) => get(abortAtom)[id])
 );
 
-export const selectedModelAtom = atom<LlmAssignment | null>(null);
+export const selectedModelAtom = atom<LlmAssignment | null>({
+  assignmentId: 0,
+  deploymentId: 0,
+  provider: 'azure-openai',
+  modelName: 'gpt-4.1-mini',
+  modelVersion: '2024-12-01-preview',
+  deploymentName: 'gpt-4.1-mini',
+  isActive: true,
+  endpoint: '',
+  accessKey: '',
+});

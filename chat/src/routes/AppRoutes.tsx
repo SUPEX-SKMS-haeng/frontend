@@ -7,8 +7,6 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 import { ChatLayout } from '@/components/layout';
-import { ProtectedRoute } from '@/components/auth';
-import Login from '@/pages/Login';
 import Chat from '@/components/chat/Chat';
 
 // 로딩 컴포넌트
@@ -25,15 +23,12 @@ const AppRoutes = () => {
   const routes = createBrowserRouter(
     createRoutesFromElements(
       <>
-        <Route path='/login' element={<Login />} />
         <Route
           path='/'
           element={
-            <ProtectedRoute>
-              <ChatLayout>
-                <Outlet />
-              </ChatLayout>
-            </ProtectedRoute>
+            <ChatLayout>
+              <Outlet />
+            </ChatLayout>
           }
         >
           <Route index element={<Chat />} />
