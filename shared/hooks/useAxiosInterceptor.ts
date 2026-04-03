@@ -1,10 +1,6 @@
 import { useEffect } from 'react';
 import axios from 'axios';
-import type {
-  AxiosError,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from 'axios';
+import type { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { axiosInstance } from '../lib/axios';
 import { clearLocalStorageAuthData } from '../utils/utils';
 import { toSnakeCase, toCamelCase } from '../utils/caseConverter';
@@ -15,6 +11,23 @@ export const useAxiosInterceptor = () => {
     if (accessToken && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
+
+    // API Gateway가 없는 로컬 개발 환경에서 user 헤더 직접 주입
+    const userStr = localStorage.getItem('user');
+    if (userStr && !config.headers['user_id']) {
+      try {
+        const user = JSON.parse(userStr);
+        if (user.userId) config.headers['user_id'] = user.userId;
+        if (user.username) config.headers['username'] = encodeURIComponent(user.username);
+        if (user.email) config.headers['email'] = user.email;
+        if (user.company) config.headers['company'] = user.company;
+        if (user.department) config.headers['department'] = user.department;
+        if (user.role) config.headers['role'] = encodeURIComponent(JSON.stringify(user.role));
+      } catch {
+        // user 파싱 실패 시 무시
+      }
+    }
+
     // params와 data를 snake_case로 자동 변환 (백엔드 요청용)
     if (config.params) {
       config.params = toSnakeCase(config.params);
@@ -39,9 +52,7 @@ export const useAxiosInterceptor = () => {
       const { method, url } = error.config as InternalAxiosRequestConfig;
       if (error.response) {
         const { status } = error.response;
-        console.error(
-          `[ERR] ${method?.toUpperCase()} ${url} | Error ${status} `
-        );
+        console.error(`[ERR] ${method?.toUpperCase()} ${url} | Error ${status} `);
 
         switch (status) {
           case 401: // unauthorized
@@ -67,14 +78,8 @@ export const useAxiosInterceptor = () => {
     return Promise.reject(error);
   };
 
-  const requestInterceptor = axiosInstance.interceptors.request.use(
-    onRequest,
-    onError
-  );
-  const responseInterceptor = axiosInstance.interceptors.response.use(
-    onResponse,
-    onError
-  );
+  const requestInterceptor = axiosInstance.interceptors.request.use(onRequest, onError);
+  const responseInterceptor = axiosInstance.interceptors.response.use(onResponse, onError);
 
   useEffect(
     () => () => {

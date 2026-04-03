@@ -13,6 +13,7 @@ export const useAuth = () => {
     mutationFn: (data: LoginRequest) => login(data),
     onSuccess: (data) => {
       localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('user', JSON.stringify(data.user));
       setUser(data.user);
       if (data.user.role.organizations.length > 0) {
         setSelectedGroup({

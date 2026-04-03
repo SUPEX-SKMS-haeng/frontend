@@ -18,6 +18,7 @@ import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { chatCancelApi, chatSimpleApi, chatStreamApi } from '@/api/chat';
+import { agentStreamApi, IAgentRequest } from '@/api/agent';
 import { useChatDataHandler } from '@/hooks/useChatDataHandler';
 import { useToast } from './useToast';
 import { v7 as uuidv7 } from 'uuid';
@@ -60,12 +61,10 @@ export const useChatSendHandler = (chatId: string) => {
   };
 
   const getMessagesRequest = () => {
-    const messagesRequest: IMessageRequest[] = messagesRef.current.map(
-      (message) => ({
-        role: message.role,
-        content: message.content,
-      })
-    );
+    const messagesRequest: IMessageRequest[] = messagesRef.current.map((message) => ({
+      role: message.role,
+      content: message.content,
+    }));
     return messagesRequest;
   };
 
@@ -85,8 +84,7 @@ export const useChatSendHandler = (chatId: string) => {
     const bufferStr = String.fromCharCode(9632);
     // const lastUserUuid = userUuid.current;
     const type = dataJson.type;
-    const lastMessageData =
-      messagesRef.current[messagesRef.current.length - 1] || null;
+    const lastMessageData = messagesRef.current[messagesRef.current.length - 1] || null;
 
     let newMessage =
       lastMessageData.type === 'progress' || !lastMessageData?.content
@@ -151,8 +149,7 @@ export const useChatSendHandler = (chatId: string) => {
   };
 
   const setCancelledData = (dataJson: IMessageResponse) => {
-    const lastMessageData =
-      messagesRef.current[messagesRef.current.length - 1] || null;
+    const lastMessageData = messagesRef.current[messagesRef.current.length - 1] || null;
     if (!lastMessageData) return;
 
     const messageData: IMessage = {
@@ -215,7 +212,8 @@ export const useChatSendHandler = (chatId: string) => {
 
     for (const dataLine of lines) {
       if (!dataLine.trim().startsWith('data: ')) continue;
-      const jsonString = dataLine.replace(/^data: /, '');
+      const jsonString = dataLine.replace(/^data: /, '').trim();
+      if (jsonString === '[DONE]') continue;
 
       try {
         const rawJson = JSON.parse(jsonString);
@@ -227,6 +225,22 @@ export const useChatSendHandler = (chatId: string) => {
             role: 'assistant',
             type: 'assistant',
             content: choice?.delta?.content ?? '',
+          };
+          await setAiMessageData(messageData);
+        } else if (dataJson.type === 'answer' && dataJson.content) {
+          // post_process_stream 포맷 처리
+          const messageData: IMessageResponse = {
+            role: 'assistant',
+            type: 'assistant',
+            content: dataJson.content,
+          };
+          await setAiMessageData(messageData);
+        } else if (!dataJson.type && dataJson.content) {
+          // 백엔드 에러 메시지 포맷 {"content": "오류..."} — 에러로 표시
+          const messageData: IMessageResponse = {
+            role: 'assistant',
+            type: 'error',
+            content: dataJson.content,
           };
           await setAiMessageData(messageData);
         }
@@ -324,8 +338,7 @@ export const useChatSendHandler = (chatId: string) => {
   /** 에러 메시지인 경우 현재까지 받은 데이터 기준으로 저장 */
   const setErrorMessages = async (error: any) => {
     const errMessage = error.message;
-    const lastMessageData =
-      messagesRef.current[messagesRef.current.length - 1] || null;
+    const lastMessageData = messagesRef.current[messagesRef.current.length - 1] || null;
     // if (lastMessageData.isCancelled) return;
 
     const messageData: IMessage = {
@@ -387,21 +400,19 @@ export const useChatSendHandler = (chatId: string) => {
           await parseMessage(streamValue, targetChatId);
         };
 
-        if (useStream) {
-          await chatStreamApi(
-            messages,
-            messageInfo,
-            partialParseMessage,
-            abortControllerRef.current?.signal
-          );
-        } else {
-          chatSimpleApiResponse = await chatSimpleApi(
-            messages,
-            messageInfo,
-            partialParseMessage,
-            abortControllerRef.current?.signal
-          );
-        }
+        await agentStreamApi(
+          {
+            query: messages[messages.length - 1]?.content ?? '',
+            chatHistory: messages.slice(0, -1),
+            agentName: 'mentor',
+            version: 'v1',
+            provider: messageInfo.provider,
+            model: messageInfo.model,
+            orgId: messageInfo.orgId,
+          },
+          partialParseMessage,
+          abortControllerRef.current?.signal
+        );
       }
     } catch (error: any) {
       console.error(error);
@@ -419,6 +430,9 @@ export const useChatSendHandler = (chatId: string) => {
       lastUpdateTimeRef.current = 0;
       haltLoadingMessage();
       console.log('isGenerating :: false');
+
+      // 사이드바 히스토리 즉시 갱신
+      window.dispatchEvent(new Event('agent-history-refresh'));
 
       if (chatSimpleApiResponse) {
         setAiMessageData({
