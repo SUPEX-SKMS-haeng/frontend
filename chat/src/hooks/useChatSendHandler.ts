@@ -61,12 +61,10 @@ export const useChatSendHandler = (chatId: string) => {
   };
 
   const getMessagesRequest = () => {
-    const messagesRequest: IMessageRequest[] = messagesRef.current.map(
-      (message) => ({
-        role: message.role,
-        content: message.content,
-      })
-    );
+    const messagesRequest: IMessageRequest[] = messagesRef.current.map((message) => ({
+      role: message.role,
+      content: message.content,
+    }));
     return messagesRequest;
   };
 
@@ -86,8 +84,7 @@ export const useChatSendHandler = (chatId: string) => {
     const bufferStr = String.fromCharCode(9632);
     // const lastUserUuid = userUuid.current;
     const type = dataJson.type;
-    const lastMessageData =
-      messagesRef.current[messagesRef.current.length - 1] || null;
+    const lastMessageData = messagesRef.current[messagesRef.current.length - 1] || null;
 
     let newMessage =
       lastMessageData.type === 'progress' || !lastMessageData?.content
@@ -152,8 +149,7 @@ export const useChatSendHandler = (chatId: string) => {
   };
 
   const setCancelledData = (dataJson: IMessageResponse) => {
-    const lastMessageData =
-      messagesRef.current[messagesRef.current.length - 1] || null;
+    const lastMessageData = messagesRef.current[messagesRef.current.length - 1] || null;
     if (!lastMessageData) return;
 
     const messageData: IMessage = {
@@ -326,8 +322,7 @@ export const useChatSendHandler = (chatId: string) => {
   /** 에러 메시지인 경우 현재까지 받은 데이터 기준으로 저장 */
   const setErrorMessages = async (error: any) => {
     const errMessage = error.message;
-    const lastMessageData =
-      messagesRef.current[messagesRef.current.length - 1] || null;
+    const lastMessageData = messagesRef.current[messagesRef.current.length - 1] || null;
     // if (lastMessageData.isCancelled) return;
 
     const messageData: IMessage = {
@@ -393,8 +388,8 @@ export const useChatSendHandler = (chatId: string) => {
           {
             query: messages[messages.length - 1]?.content ?? '',
             chatHistory: messages.slice(0, -1),
-            agentName: 'rag',
-            version: 'v2',
+            agentName: 'mentor',
+            version: 'v1',
           },
           partialParseMessage,
           abortControllerRef.current?.signal
