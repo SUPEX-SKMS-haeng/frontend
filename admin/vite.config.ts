@@ -26,9 +26,15 @@ export default defineConfig({
     port: 3001,
     open: true,
     proxy: {
-      '/api/v1': {
-        target: 'http://0.0.0.0:8000', // local backend gateway
+      '/api/v1/auth': {
+        target: 'http://0.0.0.0:8001', // backend-auth
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/v1\/auth/, '/api/v1'),
+      },
+      '/api/v1/llm-gateway': {
+        target: 'http://0.0.0.0:8080', // backend-llm-gateway
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/v1\/llm-gateway/, '/api/v1'),
       },
     },
   },
