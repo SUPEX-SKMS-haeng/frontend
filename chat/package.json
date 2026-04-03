@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "predev": "ln -sfn $(pwd)/node_modules $(dirname $(pwd))/shared/node_modules 2>/dev/null || true",
-    "dev": "vite --port 3000",
+    "dev": "vite --port 3000 --strictPort",
     "prebuild": "ln -sfn $(pwd)/node_modules $(dirname $(pwd))/shared/node_modules 2>/dev/null || true",
     "build": "vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
