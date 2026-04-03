@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAtom } from 'jotai';
-import {
-  isAuthenticatedAtom,
-  selectedGroupAtom,
-  userGroupsAtom,
-} from '@shared/store/auth';
+import { isAuthenticatedAtom, selectedGroupAtom, userGroupsAtom } from '@shared/store/auth';
 import { userAtom } from '@shared/store/auth';
 import { authRefresh } from '@shared/api/auth';
 
@@ -37,12 +33,12 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         try {
           const res = await authRefresh();
           setUser(res.user);
+          localStorage.setItem('user', JSON.stringify(res.user));
           if (res.user.role.organizations.length > 0) {
             setSelectedGroup({
               orgId: res.user.role.organizations[0].orgId,
               orgName: res.user.role.organizations[0].orgName,
-              orgDescription:
-                res.user.role.organizations[0].orgDescription ?? '',
+              orgDescription: res.user.role.organizations[0].orgDescription ?? '',
               role: res.user.role.organizations[0].role,
             });
             setUserGroups(

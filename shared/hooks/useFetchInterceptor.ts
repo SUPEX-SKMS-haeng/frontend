@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { clearLocalStorageAuthData } from '../utils/utils';
+import { toSnakeCase } from '../utils/caseConverter';
 
 export const useFetchInterceptor = () => {
   useEffect(() => {
@@ -31,7 +32,8 @@ export const useFetchInterceptor = () => {
           if (user.email) headers['email'] = user.email;
           if (user.company) headers['company'] = user.company;
           if (user.department) headers['department'] = user.department;
-          if (user.role) headers['role'] = encodeURIComponent(JSON.stringify(user.role));
+          if (user.role)
+            headers['role'] = encodeURIComponent(JSON.stringify(toSnakeCase(user.role)));
         } catch {
           // user 파싱 실패 시 무시
         }

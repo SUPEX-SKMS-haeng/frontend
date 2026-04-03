@@ -22,7 +22,8 @@ export const useAxiosInterceptor = () => {
         if (user.email) config.headers['email'] = user.email;
         if (user.company) config.headers['company'] = user.company;
         if (user.department) config.headers['department'] = user.department;
-        if (user.role) config.headers['role'] = encodeURIComponent(JSON.stringify(user.role));
+        if (user.role)
+          config.headers['role'] = encodeURIComponent(JSON.stringify(toSnakeCase(user.role)));
       } catch {
         // user 파싱 실패 시 무시
       }

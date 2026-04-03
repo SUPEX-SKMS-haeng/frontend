@@ -31,6 +31,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           const res = await authRefresh();
           if (res && res.user) {
             setUser(res.user);
+            localStorage.setItem('user', JSON.stringify(res.user));
           }
         } catch (error) {
           console.error('Auth refresh failed:', error);
@@ -57,11 +58,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   if (user && !hasAdminPageAccess(user.role)) {
     return (
-      <Navigate
-        to='/login'
-        state={{ from: location, reason: 'ADMIN_ACCESS_DENIED' }}
-        replace
-      />
+      <Navigate to='/login' state={{ from: location, reason: 'ADMIN_ACCESS_DENIED' }} replace />
     );
   }
 

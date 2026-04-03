@@ -32,8 +32,13 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/v1\/auth/, '/api/v1'),
       },
-      '/api/v1': {
+      '/api/v1/llm-gateway': {
         target: 'http://0.0.0.0:8080', // llm-gateway
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/v1\/llm-gateway/, '/api/v1'),
+      },
+      '/api/v1': {
+        target: 'http://0.0.0.0:8080', // llm-gateway (fallback)
         changeOrigin: true,
       },
       '/admin': {
