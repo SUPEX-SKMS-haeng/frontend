@@ -1,4 +1,4 @@
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, FileText } from 'lucide-react';
 import { IMessage } from '@/types/message';
 import { ChatCopy } from './ChatBubbleActions';
 
@@ -10,15 +10,8 @@ interface ChatBubbleProps {
   isMessageGenerating: boolean;
 }
 
-const ChatBubble = ({
-  message,
-  isMessageGenerating = false,
-}: ChatBubbleProps) => {
-  if (
-    !message.content &&
-    message.type !== 'progress' &&
-    message.type !== 'error'
-  ) {
+const ChatBubble = ({ message, isMessageGenerating = false }: ChatBubbleProps) => {
+  if (!message.content && message.type !== 'progress' && message.type !== 'error') {
     return null;
   }
 
@@ -43,28 +36,32 @@ const ChatBubble = ({
           </div>
         ) : (
           <div className='max-w-[85%] text-[15px] leading-relaxed'>
-            <div className='text-neutral-900 whitespace-pre-wrap'>
-              {message.content}
-            </div>
+            <div className='text-neutral-900 whitespace-pre-wrap'>{message.content}</div>
           </div>
         )
       ) : message.role === 'system' ? (
         <div className='max-w-[85%] text-[15px] leading-relaxed'>
-          <div className='text-neutral-900 whitespace-pre-wrap'>
-            {message.content}
-          </div>
+          <div className='text-neutral-900 whitespace-pre-wrap'>{message.content}</div>
         </div>
       ) : null}
 
       {/** 출처 표기 영역 */}
-      {/* {message.role === 'assistant' &&
-        message.citations &&
-        message.citations.length > 0 && (
-          <ChatCitations
-            messageUuid={message.uuid}
-            citations={message.citations}
-          />
-        )} */}
+      {message.role === 'assistant' && message.sources && message.sources.length > 0 && (
+        <div className='mt-3 max-w-[85%]'>
+          <p className='text-[12px] text-neutral-400 mb-1.5'>참고 문서</p>
+          <div className='flex flex-wrap gap-2'>
+            {message.sources.map((source, idx) => (
+              <div
+                key={idx}
+                className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-100 text-[13px] text-neutral-600'
+              >
+                <FileText className='w-3.5 h-3.5 flex-shrink-0 text-neutral-400' />
+                <span className='truncate max-w-[200px]'>{source.title}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/** sub function 영역: copy, feedback 등 */}
       {/* {(message.role === 'assistant' || message.role === 'system') &&

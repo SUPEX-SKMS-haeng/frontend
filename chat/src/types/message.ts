@@ -23,13 +23,14 @@ export interface IFeedback {
   updatedAt?: string;
 }
 
-export type MessageType =
-  | 'user'
-  | 'assistant'
-  | 'progress'
-  | 'cancelled'
-  | 'error';
+export type MessageType = 'user' | 'assistant' | 'progress' | 'cancelled' | 'error';
 export type MessageRoleType = 'user' | 'assistant' | 'system';
+
+export interface ISource {
+  title: string;
+  score?: number;
+  contentPreview?: string;
+}
 
 export interface IMessage {
   role: MessageRoleType;
@@ -41,6 +42,7 @@ export interface IMessage {
   // feedback?: IFeedback;
   // thoughts?: IThought[];
   // citations?: ICitation[];
+  sources?: ISource[];
 }
 
 export interface IMessageRequest {
