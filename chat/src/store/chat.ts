@@ -1,4 +1,5 @@
 import type { IAbortData, IChat } from '@/types/chat';
+import type { IAgentInfo } from '@/api/agent';
 import { LlmAssignment } from '@/types/llmGateway';
 import { atom } from 'jotai';
 import { atomFamily } from 'jotai-family';
@@ -58,6 +59,12 @@ export const abortDataAtom = atom(
   }
 );
 export const abortFamilyAtom = atomFamily((id: string) => atom((get) => get(abortAtom)[id]));
+
+export const selectedAgentAtom = atom<IAgentInfo | null>({
+  name: 'mentor',
+  version: 'v1',
+  description: '',
+});
 
 export const selectedModelAtom = atom<LlmAssignment | null>({
   assignmentId: 0,

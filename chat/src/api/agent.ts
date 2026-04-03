@@ -28,6 +28,18 @@ export const agentHistoryDetailApi = async (traceId: string): Promise<IAgentHist
   return response.data.data;
 };
 
+/** 에이전트 목록 조회 */
+export interface IAgentInfo {
+  name: string;
+  version: string;
+  description: string;
+}
+
+export const agentListApi = async (): Promise<IAgentInfo[]> => {
+  const response = await axiosInstance.get(`${URL_PREFIX}/agents`);
+  return response.data.data;
+};
+
 export interface IAgentRequest {
   query: string;
   chatHistory?: IMessageRequest[];

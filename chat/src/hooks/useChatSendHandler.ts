@@ -3,6 +3,7 @@ import {
   chatDataAtom,
   chatFamilyAtom,
   currentChatIdAtom,
+  selectedAgentAtom,
   selectedModelAtom,
 } from '@/store/chat';
 import type {
@@ -37,6 +38,7 @@ export const useChatSendHandler = (chatId: string) => {
   const [, setCurrentChatId] = useAtom(currentChatIdAtom);
   const [abortData, setAbortData] = useAtom(abortDataAtom);
   const selectedGroup = useAtomValue(selectedGroupAtom);
+  const selectedAgent = useAtomValue(selectedAgentAtom);
   const selectedModel = useAtomValue(selectedModelAtom);
 
   const messagesRef = useRef<IMessage[]>([]);
@@ -404,8 +406,8 @@ export const useChatSendHandler = (chatId: string) => {
           {
             query: messages[messages.length - 1]?.content ?? '',
             chatHistory: messages.slice(0, -1),
-            agentName: 'mentor',
-            version: 'v1',
+            agentName: selectedAgent?.name ?? 'mentor',
+            version: selectedAgent?.version ?? 'v1',
             provider: messageInfo.provider,
             model: messageInfo.model,
             orgId: messageInfo.orgId,
