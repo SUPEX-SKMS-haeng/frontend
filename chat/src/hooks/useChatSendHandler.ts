@@ -227,6 +227,22 @@ export const useChatSendHandler = (chatId: string) => {
             content: choice?.delta?.content ?? '',
           };
           await setAiMessageData(messageData);
+        } else if (dataJson.type === 'answer' && dataJson.content) {
+          // post_process_stream 포맷 처리
+          const messageData: IMessageResponse = {
+            role: 'assistant',
+            type: 'assistant',
+            content: dataJson.content,
+          };
+          await setAiMessageData(messageData);
+        } else if (!dataJson.type && dataJson.content) {
+          // 백엔드 에러 메시지 포맷 {"content": "오류..."} — 에러로 표시
+          const messageData: IMessageResponse = {
+            role: 'assistant',
+            type: 'error',
+            content: dataJson.content,
+          };
+          await setAiMessageData(messageData);
         }
         // switch (dataJson.type) {
         // case 'user_message':
