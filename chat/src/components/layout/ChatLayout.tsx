@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Sidebar } from '@/components/sidebar';
 import { TopBar } from '@/components/topbar';
 import { ToastContainer } from '@/components/common';
+import SourcePanel from '@/components/chat/SourcePanel';
 import { useToast } from '@/hooks/useToast';
 
 const ChatLayout = ({ children }: { children: React.ReactNode }) => {
@@ -11,10 +12,7 @@ const ChatLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className='flex h-screen w-screen overflow-hidden bg-neutral-50'>
       {/* 좌측 사이드바 */}
-      <Sidebar
-        isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen(!sidebarOpen)}
-      />
+      <Sidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
 
       {/* 메인 영역 */}
       <div className='flex flex-col flex-1 min-w-0 h-full bg-white'>
@@ -24,6 +22,9 @@ const ChatLayout = ({ children }: { children: React.ReactNode }) => {
         {/* 채팅 메인 */}
         {children}
       </div>
+
+      {/* 우측: 출처 원문 사이드 패널 */}
+      <SourcePanel />
 
       {/* 토스트 메시지 */}
       <ToastContainer toasts={toasts} onRemove={removeToast} />

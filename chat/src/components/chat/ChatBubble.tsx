@@ -1,5 +1,7 @@
 import { Loader2, AlertCircle, FileText, Clock } from 'lucide-react';
+import { useSetAtom } from 'jotai';
 import { IMessage } from '@/types/message';
+import { selectedSourceAtom } from '@/store/chat';
 import { ChatCopy } from './ChatBubbleActions';
 
 // TODO: 실제 로직으로 교체 필요 - 에러 발생 여부에 따라 결정
@@ -11,6 +13,7 @@ interface ChatBubbleProps {
 }
 
 const ChatBubble = ({ message, isMessageGenerating = false }: ChatBubbleProps) => {
+  const setSelectedSource = useSetAtom(selectedSourceAtom);
   if (!message.content && message.type !== 'progress' && message.type !== 'error') {
     return null;
   }
@@ -57,13 +60,17 @@ const ChatBubble = ({ message, isMessageGenerating = false }: ChatBubbleProps) =
           <p className='text-[12px] text-neutral-400 mb-1.5'>참고 문서</p>
           <div className='flex flex-wrap gap-2'>
             {message.sources.map((source, idx) => (
-              <div
+              <button
                 key={idx}
-                className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-100 text-[13px] text-neutral-600'
+                onClick={() => setSelectedSource(source)}
+                className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-100 text-[13px] text-neutral-600 hover:bg-blue-50 hover:text-blue-700 transition-colors cursor-pointer text-left'
               >
                 <FileText className='w-3.5 h-3.5 flex-shrink-0 text-neutral-400' />
+                {source.index != null && (
+                  <span className='text-blue-500 font-medium text-[12px]'>[{source.index}]</span>
+                )}
                 <span className='truncate max-w-[200px]'>{source.title}</span>
-              </div>
+              </button>
             ))}
           </div>
         </div>

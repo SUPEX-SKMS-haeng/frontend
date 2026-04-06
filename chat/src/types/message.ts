@@ -27,8 +27,10 @@ export type MessageType = 'user' | 'assistant' | 'progress' | 'cancelled' | 'err
 export type MessageRoleType = 'user' | 'assistant' | 'system';
 
 export interface ISource {
+  index?: number;
   title: string;
   score?: number;
+  content?: string;
   contentPreview?: string;
 }
 

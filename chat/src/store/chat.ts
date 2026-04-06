@@ -1,5 +1,6 @@
 import type { IAbortData, IChat } from '@/types/chat';
 import type { IAgentInfo } from '@/api/agent';
+import type { ISource } from '@/types/message';
 import { LlmAssignment } from '@/types/llmGateway';
 import { atom } from 'jotai';
 import { atomFamily } from 'jotai-family';
@@ -65,6 +66,9 @@ export const selectedAgentAtom = atom<IAgentInfo | null>({
   version: 'v1',
   description: '',
 });
+
+/** 출처 사이드 패널에 표시할 소스 */
+export const selectedSourceAtom = atom<ISource | null>(null);
 
 export const selectedModelAtom = atom<LlmAssignment | null>({
   assignmentId: 0,
