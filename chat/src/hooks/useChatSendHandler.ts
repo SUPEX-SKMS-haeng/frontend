@@ -246,6 +246,15 @@ export const useChatSendHandler = (chatId: string) => {
               { ...lastMessageData, sources: dataJson.sources },
             ];
           }
+        } else if (dataJson.type === 'metadata' && dataJson.metadata) {
+          // metadata 이벤트 처리 — elapsedSeconds를 현재 assistant 메시지에 추가
+          const lastMessageData = messagesRef.current[messagesRef.current.length - 1] || null;
+          if (lastMessageData && dataJson.metadata.elapsedSeconds != null) {
+            messagesRef.current = [
+              ...messagesRef.current.slice(0, messagesRef.current.length - 1),
+              { ...lastMessageData, elapsedSeconds: dataJson.metadata.elapsedSeconds },
+            ];
+          }
         } else if (!dataJson.type && dataJson.content) {
           // 백엔드 에러 메시지 포맷 {"content": "오류..."} — 에러로 표시
           const messageData: IMessageResponse = {

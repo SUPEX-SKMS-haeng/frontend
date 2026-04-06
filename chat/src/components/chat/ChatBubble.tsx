@@ -1,4 +1,4 @@
-import { Loader2, AlertCircle, FileText } from 'lucide-react';
+import { Loader2, AlertCircle, FileText, Clock } from 'lucide-react';
 import { IMessage } from '@/types/message';
 import { ChatCopy } from './ChatBubbleActions';
 
@@ -37,6 +37,12 @@ const ChatBubble = ({ message, isMessageGenerating = false }: ChatBubbleProps) =
         ) : (
           <div className='max-w-[85%] text-[15px] leading-relaxed'>
             <div className='text-neutral-900 whitespace-pre-wrap'>{message.content}</div>
+            {message.elapsedSeconds != null && (
+              <div className='flex items-center gap-1 mt-2 text-[12px] text-neutral-400'>
+                <Clock className='w-3 h-3' />
+                <span>{message.elapsedSeconds}초</span>
+              </div>
+            )}
           </div>
         )
       ) : message.role === 'system' ? (

@@ -43,6 +43,7 @@ export interface IMessage {
   // thoughts?: IThought[];
   // citations?: ICitation[];
   sources?: ISource[];
+  elapsedSeconds?: number;
 }
 
 export interface IMessageRequest {
