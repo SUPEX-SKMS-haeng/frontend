@@ -32,6 +32,15 @@ export interface ISource {
   score?: number;
   content?: string;
   contentPreview?: string;
+  documentPath?: string;
+  pageNumber?: number;
+  tagsTopic?: string;
+  author?: string;
+  issue?: string;
+  bm25Score?: number;
+  bm25Rank?: number;
+  vectorScore?: number;
+  vectorRank?: number;
 }
 
 export interface IMessage {

@@ -28,15 +28,47 @@ const SourcePanel = () => {
         </button>
       </div>
 
-      {/* 점수 */}
-      {selectedSource.score != null && (
-        <div className='px-5 py-2.5 border-b border-neutral-100'>
-          <span className='text-[12px] text-neutral-400'>관련도 점수: </span>
-          <span className='text-[12px] font-medium text-neutral-600'>
-            {selectedSource.score.toFixed(2)}
-          </span>
-        </div>
-      )}
+      {/* 메타 정보 */}
+      <div className='px-5 py-2.5 border-b border-neutral-100 flex flex-col gap-1'>
+        {selectedSource.score != null && (
+          <div className='flex items-center gap-2'>
+            <span className='text-[12px] text-neutral-400'>관련도:</span>
+            <div className='flex items-center gap-1.5'>
+              <div className='w-20 h-1.5 bg-neutral-100 rounded-full overflow-hidden'>
+                <div
+                  className='h-full bg-blue-500 rounded-full'
+                  style={{ width: `${Math.round(selectedSource.score * 100)}%` }}
+                />
+              </div>
+              <span className='text-[12px] font-medium text-neutral-600'>
+                {Math.round(selectedSource.score * 100)}%
+              </span>
+            </div>
+          </div>
+        )}
+        {selectedSource.tagsTopic && (
+          <div className='flex items-center gap-1 flex-wrap'>
+            {selectedSource.tagsTopic.split(',').map((tag, idx) => (
+              <span
+                key={idx}
+                className='text-[11px] px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded'
+              >
+                {tag.trim()}
+              </span>
+            ))}
+          </div>
+        )}
+        {(selectedSource.author || selectedSource.issue) && (
+          <div className='text-[11px] text-neutral-400'>
+            {selectedSource.author && <span>{selectedSource.author}</span>}
+            {selectedSource.author && selectedSource.issue && <span> · </span>}
+            {selectedSource.issue && <span>{selectedSource.issue}</span>}
+          </div>
+        )}
+        {selectedSource.pageNumber != null && (
+          <div className='text-[11px] text-neutral-400'>p.{selectedSource.pageNumber}</div>
+        )}
+      </div>
 
       {/* 원문 내용 */}
       <div className='flex-1 overflow-y-auto px-5 py-4'>

@@ -8,6 +8,7 @@ export interface IAgentHistoryTurn {
   query: string;
   answer: string | null;
   elapsedSeconds?: number | null;
+  sources?: Record<string, unknown>[] | null;
 }
 
 export interface IAgentHistory {

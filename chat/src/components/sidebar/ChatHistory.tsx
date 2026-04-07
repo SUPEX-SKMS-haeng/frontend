@@ -4,7 +4,7 @@ import { useAtom } from 'jotai';
 import { agentHistoryApi, agentHistoryDetailApi, IAgentHistory } from '@/api/agent';
 import { chatDataAtom, currentChatIdAtom } from '@/store/chat';
 import { useNavigate } from 'react-router-dom';
-import type { IMessage } from '@/types/message';
+import type { IMessage, ISource } from '@/types/message';
 
 const ChatHistory = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -40,6 +40,27 @@ const ChatHistory = () => {
 
       const messages: IMessage[] = [];
 
+      // raw sources 배열을 ISource[]로 변환하는 헬퍼
+      const mapSources = (raw?: Record<string, unknown>[] | null): ISource[] | undefined => {
+        if (!raw || raw.length === 0) return undefined;
+        return raw.map((s) => ({
+          index: s.index as number | undefined,
+          title: (s.title as string) ?? '',
+          score: s.score as number | undefined,
+          content: s.content as string | undefined,
+          contentPreview: (s.content_preview ?? s.contentPreview) as string | undefined,
+          documentPath: (s.document_path ?? s.documentPath) as string | undefined,
+          pageNumber: (s.page_number ?? s.pageNumber) as number | undefined,
+          tagsTopic: (s.tags_topic ?? s.tagsTopic) as string | undefined,
+          author: s.author as string | undefined,
+          issue: s.issue as string | undefined,
+          bm25Score: (s.bm25_score ?? s.bm25Score) as number | undefined,
+          bm25Rank: (s.bm25_rank ?? s.bm25Rank) as number | undefined,
+          vectorScore: (s.vector_score ?? s.vectorScore) as number | undefined,
+          vectorRank: (s.vector_rank ?? s.vectorRank) as number | undefined,
+        }));
+      };
+
       // 세션에 여러 턴이 있으면 전체 로드
       if (detail.turns && detail.turns.length > 0) {
         for (const turn of detail.turns) {
@@ -50,6 +71,7 @@ const ChatHistory = () => {
               content: turn.answer,
               type: 'assistant',
               elapsedSeconds: turn.elapsedSeconds ?? undefined,
+              sources: mapSources(turn.sources),
             });
           }
         }
@@ -57,7 +79,12 @@ const ChatHistory = () => {
         // 단일 턴 (세션ID 없는 레거시 데이터)
         messages.push({ role: 'user', content: detail.query, type: 'user' });
         if (detail.answer) {
-          messages.push({ role: 'assistant', content: detail.answer, type: 'assistant' });
+          messages.push({
+            role: 'assistant',
+            content: detail.answer,
+            type: 'assistant',
+            sources: mapSources((detail as any).sources),
+          });
         }
       }
 

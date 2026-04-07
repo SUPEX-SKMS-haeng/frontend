@@ -238,12 +238,28 @@ export const useChatSendHandler = (chatId: string) => {
           };
           await setAiMessageData(messageData);
         } else if (dataJson.type === 'sources' && dataJson.sources) {
-          // agent sources 이벤트 처리 — 현재 assistant 메시지에 sources 추가
+          // agent sources 이벤트 처리 — snake_case → camelCase 변환 후 메시지에 추가
+          const mappedSources = dataJson.sources.map((s: Record<string, unknown>) => ({
+            index: s.index,
+            title: s.title,
+            score: s.score,
+            content: s.content,
+            contentPreview: s.content_preview ?? s.contentPreview,
+            documentPath: s.document_path ?? s.documentPath,
+            pageNumber: s.page_number ?? s.pageNumber,
+            tagsTopic: s.tags_topic ?? s.tagsTopic,
+            author: s.author,
+            issue: s.issue,
+            bm25Score: s.bm25_score ?? s.bm25Score,
+            bm25Rank: s.bm25_rank ?? s.bm25Rank,
+            vectorScore: s.vector_score ?? s.vectorScore,
+            vectorRank: s.vector_rank ?? s.vectorRank,
+          }));
           const lastMessageData = messagesRef.current[messagesRef.current.length - 1] || null;
           if (lastMessageData) {
             messagesRef.current = [
               ...messagesRef.current.slice(0, messagesRef.current.length - 1),
-              { ...lastMessageData, sources: dataJson.sources },
+              { ...lastMessageData, sources: mappedSources },
             ];
           }
         } else if (dataJson.type === 'metadata' && dataJson.metadata) {
