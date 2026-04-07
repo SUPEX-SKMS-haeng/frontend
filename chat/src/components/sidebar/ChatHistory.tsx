@@ -38,12 +38,30 @@ const ChatHistory = () => {
     try {
       const detail = await agentHistoryDetailApi(item.traceId);
 
-      const messages: IMessage[] = [{ role: 'user', content: detail.query, type: 'user' }];
-      if (detail.answer) {
-        messages.push({ role: 'assistant', content: detail.answer, type: 'assistant' });
+      const messages: IMessage[] = [];
+
+      // 세션에 여러 턴이 있으면 전체 로드
+      if (detail.turns && detail.turns.length > 0) {
+        for (const turn of detail.turns) {
+          messages.push({ role: 'user', content: turn.query, type: 'user' });
+          if (turn.answer) {
+            messages.push({
+              role: 'assistant',
+              content: turn.answer,
+              type: 'assistant',
+              elapsedSeconds: turn.elapsedSeconds ?? undefined,
+            });
+          }
+        }
+      } else {
+        // 단일 턴 (세션ID 없는 레거시 데이터)
+        messages.push({ role: 'user', content: detail.query, type: 'user' });
+        if (detail.answer) {
+          messages.push({ role: 'assistant', content: detail.answer, type: 'assistant' });
+        }
       }
 
-      const chatId = item.traceId;
+      const chatId = detail.sessionId || item.traceId;
       setChatData({
         id: chatId,
         data: {

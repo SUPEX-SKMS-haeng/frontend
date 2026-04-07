@@ -429,6 +429,7 @@ export const useChatSendHandler = (chatId: string) => {
             provider: messageInfo.provider,
             model: messageInfo.model,
             orgId: messageInfo.orgId,
+            sessionId: targetChatId,
           },
           partialParseMessage,
           abortControllerRef.current?.signal

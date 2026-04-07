@@ -4,14 +4,22 @@ import { toSnakeCase } from '@shared/utils/caseConverter';
 
 const URL_PREFIX = `/agent`;
 
+export interface IAgentHistoryTurn {
+  query: string;
+  answer: string | null;
+  elapsedSeconds?: number | null;
+}
+
 export interface IAgentHistory {
   id: number;
   traceId: string;
+  sessionId: string | null;
   query: string;
   answer: string | null;
   agentName: string;
   agentVersion: string;
   createDt: string;
+  turns?: IAgentHistoryTurn[] | null;
 }
 
 /** 히스토리 조회 */
@@ -48,6 +56,7 @@ export interface IAgentRequest {
   provider?: string;
   model?: string;
   orgId?: string | number;
+  sessionId?: string;
 }
 
 /** 비스트리밍 호출 */
