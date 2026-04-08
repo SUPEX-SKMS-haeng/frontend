@@ -41,6 +41,8 @@ export interface ISource {
   bm25Rank?: number;
   vectorScore?: number;
   vectorRank?: number;
+  absoluteRelevance?: number;
+  confidenceLevel?: 'high' | 'medium' | 'low';
 }
 
 export interface IMessage {

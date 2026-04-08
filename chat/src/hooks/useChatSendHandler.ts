@@ -254,6 +254,8 @@ export const useChatSendHandler = (chatId: string) => {
             bm25Rank: s.bm25_rank ?? s.bm25Rank,
             vectorScore: s.vector_score ?? s.vectorScore,
             vectorRank: s.vector_rank ?? s.vectorRank,
+            absoluteRelevance: s.absolute_relevance ?? s.absoluteRelevance,
+            confidenceLevel: s.confidence_level ?? s.confidenceLevel,
           }));
           const lastMessageData = messagesRef.current[messagesRef.current.length - 1] || null;
           if (lastMessageData) {

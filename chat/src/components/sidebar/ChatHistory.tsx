@@ -58,6 +58,8 @@ const ChatHistory = () => {
           bm25Rank: (s.bm25_rank ?? s.bm25Rank) as number | undefined,
           vectorScore: (s.vector_score ?? s.vectorScore) as number | undefined,
           vectorRank: (s.vector_rank ?? s.vectorRank) as number | undefined,
+          absoluteRelevance: (s.absolute_relevance ?? s.absoluteRelevance) as number | undefined,
+          confidenceLevel: (s.confidence_level ?? s.confidenceLevel) as ISource['confidenceLevel'],
         }));
       };
 

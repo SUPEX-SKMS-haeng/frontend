@@ -1,0 +1,66 @@
+{
+  "testDate": "2026-04-08",
+  "fixVersion": "off-topic-classification",
+  "tests": [
+    {
+      "id": "retest-1-nft",
+      "query": "NFT 만드는 법을 알려주세요",
+      "passed": false,
+      "checks": {
+        "gradeInsufficient": false,
+        "noSkmsFrame": false
+      },
+      "responseText": "NFT 만드는 법을 묻는다면, 그것도 중요하지만 내가 해봤더니 기업 경영에서 가장 중요한 건 결국 '사람'이고, '사람의 능력을 얼마나 끌어내는가' 거든. SKMS에서 말하는 SUPEX 정신이 바로 그 핵심이야. 왜냐하면 NFT 만드는 기술이 아무리 좋아도 그걸 다루는 사람",
+      "responseTime": 12.533,
+      "notes": "오프토픽 차단 미작동 확인. NFT 질문을 SKMS 철학으로 우회 답변. off_topic 인텐트 분류가 실제 동작하지 않거나 백엔드 배포가 반영 안 된 상태로 보임. 'grade insufficient'로 차단되지 않고 SKMS 프레임으로 답변 생성함."
+    },
+    {
+      "id": "retest-2-supex",
+      "query": "SUPEX 목표와 현실적인 목표 사이에서 어떻게 균형을 잡아야 합니까?",
+      "passed": true,
+      "checks": {
+        "sourcePanelOpened": true,
+        "confidenceBadge": true,
+        "absoluteRelevanceNumber": true,
+        "normalResponse": true
+      },
+      "sourceDetails": {
+        "sourcePanelOpened": true,
+        "confidenceBadge": true,
+        "absoluteRelevanceNumber": true,
+        "badgeText": "보통",
+        "relevanceValue": "0.57 (스크린샷 직접 확인)"
+      },
+      "responseText": "그러니까 SUPEX 목표와 현실적인 목표 사이에서 균형을 잡으려는 얘기지? 내 경험으로 보면, SUPEX란 말이 원래 Super Excellent Level의 줄임말로, 인간의 능력으로 도달할 수 있는 최고의 수준이라는 거야.",
+      "responseTime": 5.226,
+      "screenshotPath": "tests/mentor-e2e/screenshots/test2-supex-source.png",
+      "notes": "정상 답변 생성 확인. 소스 패널 열기 성공([기 1] 버튼 클릭). confidence 배지 '보통' 확인. absolute_relevance 수치 0.57 표시 확인 (스크린샷 기준). 스크립트의 텍스트 셀렉터 매칭 이슈로 relevanceValue 문자열 추출은 공백이었으나 스크린샷으로 0.57 직접 확인함."
+    },
+    {
+      "id": "retest-3-passion",
+      "query": "패기란 무엇이며 경영에서 왜 중요한가?",
+      "passed": true,
+      "checks": {
+        "normalResponse": true,
+        "confidenceBadge": true,
+        "noHallucination": true
+      },
+      "sourceDetails": {
+        "sourcePanelOpened": true,
+        "confidenceBadge": true,
+        "absoluteRelevanceNumber": true,
+        "badgeText": "보통",
+        "relevanceValue": "0.57 (스크린샷 직접 확인)"
+      },
+      "responseText": "최종현 회장은 21세기에 선경이 서구 기업들과의 경쟁에서 이길 수 있는 우위 요소가 지난 300년 동안 서구의 경제학이 해결하지 못한 문제 중 하나인 사람의 능력을 활용하는 문제라고 인식하고 SKMS를 통해 이를 선경의 핵심경쟁 우위 요소로 삼으려고 했다.",
+      "responseTime": 4.803,
+      "screenshotPath": "tests/mentor-e2e/screenshots/test3-passion-source.png",
+      "notes": "정상 답변 생성 확인. 소스 패널 열기 성공. confidence 배지 '보통' 확인. '1990년 10월 서울대학교 경영학 국제학술 심포지엄'은 RAG가 인용한 실제 출처 문구이며 할루시네이션 아님. 자동 패턴 매칭 오탐(false positive) 수정 반영. 답변 내 수치 할루시네이션 없음."
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "passed": 2,
+    "failed": 1
+  }
+}
