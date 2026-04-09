@@ -55,22 +55,6 @@ const SourcePanel = () => {
 
       {/* 메타 정보 */}
       <div className='px-5 py-2.5 border-b border-neutral-100 flex flex-col gap-1'>
-        {selectedSource.score != null && (
-          <div className='flex items-center gap-2'>
-            <span className='text-[12px] text-neutral-400'>관련도:</span>
-            <div className='flex items-center gap-1.5'>
-              <div className='w-20 h-1.5 bg-neutral-100 rounded-full overflow-hidden'>
-                <div
-                  className='h-full bg-blue-500 rounded-full'
-                  style={{ width: `${Math.round(selectedSource.score * 100)}%` }}
-                />
-              </div>
-              <span className='text-[12px] font-medium text-neutral-600'>
-                {Math.round(selectedSource.score * 100)}%
-              </span>
-            </div>
-          </div>
-        )}
         {selectedSource.absoluteRelevance != null && (
           <div className='flex items-center gap-2'>
             <span className='text-[12px] text-neutral-400'>절대 관련도:</span>
