@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { useAtom } from 'jotai';
 import { selectedSourceAtom } from '@/store/chat';
+import RelevanceScoreBadge from './RelevanceScoreBadge';
 
 const SourcePanel = () => {
   const [selectedSource, setSelectedSource] = useAtom(selectedSourceAtom);
@@ -15,22 +16,6 @@ const SourcePanel = () => {
 
   const isLowConfidence = selectedSource.confidenceLevel === 'low';
   const showContent = !isLowConfidence || contentExpanded;
-
-  const confidenceBadge = () => {
-    if (!selectedSource.confidenceLevel) return null;
-    const level = selectedSource.confidenceLevel;
-    const labelMap = { high: '높음', medium: '보통', low: '참고용' } as const;
-    const styleMap = {
-      high: 'bg-green-100 text-green-700',
-      medium: 'bg-yellow-100 text-yellow-700',
-      low: 'bg-neutral-100 text-neutral-400',
-    } as const;
-    return (
-      <span className={`text-[11px] px-1.5 py-0.5 rounded font-medium ${styleMap[level]}`}>
-        {labelMap[level]}
-      </span>
-    );
-  };
 
   return (
     <div className='w-[420px] flex-shrink-0 border-l border-neutral-200 bg-white flex flex-col h-full'>
@@ -53,47 +38,35 @@ const SourcePanel = () => {
         </button>
       </div>
 
-      {/* 메타 정보 */}
-      <div className='px-5 py-2.5 border-b border-neutral-100 flex flex-col gap-1'>
-        {selectedSource.absoluteRelevance != null && (
-          <div className='flex items-center gap-2'>
-            <span className='text-[12px] text-neutral-400'>절대 관련도:</span>
-            <div className='flex items-center gap-1.5'>
-              <span className='text-[12px] font-medium text-neutral-600'>
-                {selectedSource.absoluteRelevance.toFixed(2)}
-              </span>
-              {confidenceBadge()}
+      {/* 관련도 배지 */}
+      <div className='px-5 py-3 border-b border-neutral-100'>
+        <RelevanceScoreBadge source={selectedSource} />
+
+        {/* 메타 정보 */}
+        <div className='mt-2.5 flex flex-col gap-1'>
+          {selectedSource.tagsTopic && (
+            <div className='flex items-center gap-1 flex-wrap'>
+              {selectedSource.tagsTopic.split(',').map((tag, idx) => (
+                <span
+                  key={idx}
+                  className='text-[11px] px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded'
+                >
+                  {tag.trim()}
+                </span>
+              ))}
             </div>
-          </div>
-        )}
-        {selectedSource.absoluteRelevance == null && selectedSource.confidenceLevel && (
-          <div className='flex items-center gap-2'>
-            <span className='text-[12px] text-neutral-400'>신뢰도:</span>
-            {confidenceBadge()}
-          </div>
-        )}
-        {selectedSource.tagsTopic && (
-          <div className='flex items-center gap-1 flex-wrap'>
-            {selectedSource.tagsTopic.split(',').map((tag, idx) => (
-              <span
-                key={idx}
-                className='text-[11px] px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded'
-              >
-                {tag.trim()}
-              </span>
-            ))}
-          </div>
-        )}
-        {(selectedSource.author || selectedSource.issue) && (
-          <div className='text-[11px] text-neutral-400'>
-            {selectedSource.author && <span>{selectedSource.author}</span>}
-            {selectedSource.author && selectedSource.issue && <span> · </span>}
-            {selectedSource.issue && <span>{selectedSource.issue}</span>}
-          </div>
-        )}
-        {selectedSource.pageNumber != null && (
-          <div className='text-[11px] text-neutral-400'>p.{selectedSource.pageNumber}</div>
-        )}
+          )}
+          {(selectedSource.author || selectedSource.issue) && (
+            <div className='text-[11px] text-neutral-400'>
+              {selectedSource.author && <span>{selectedSource.author}</span>}
+              {selectedSource.author && selectedSource.issue && <span> · </span>}
+              {selectedSource.issue && <span>{selectedSource.issue}</span>}
+            </div>
+          )}
+          {selectedSource.pageNumber != null && (
+            <div className='text-[11px] text-neutral-400'>p.{selectedSource.pageNumber}</div>
+          )}
+        </div>
       </div>
 
       {/* 원문 내용 */}

@@ -254,6 +254,8 @@ export const useChatSendHandler = (chatId: string) => {
             bm25Rank: s.bm25_rank ?? s.bm25Rank,
             vectorScore: s.vector_score ?? s.vectorScore,
             vectorRank: s.vector_rank ?? s.vectorRank,
+            rerankerScore: s.reranker_score ?? s.rerankerScore,
+            rrfScore: s.rrf_score_raw ?? s.rrfScore,
             absoluteRelevance: s.absolute_relevance ?? s.absoluteRelevance,
             confidenceLevel: s.confidence_level ?? s.confidenceLevel,
           }));

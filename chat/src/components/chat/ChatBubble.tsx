@@ -5,6 +5,15 @@ import { IMessage, ISource } from '@/types/message';
 import { selectedSourceAtom } from '@/store/chat';
 import { ChatCopy } from './ChatBubbleActions';
 
+const getConfidenceDot = (source: ISource) => {
+  const raw = source.rerankerScore;
+  const score = raw != null ? Math.min(raw / 4, 1) : source.absoluteRelevance;
+  if (score == null) return null;
+  if (score >= 0.75) return 'bg-emerald-500';
+  if (score >= 0.38) return 'bg-amber-400';
+  return 'bg-neutral-400';
+};
+
 // TODO: 실제 로직으로 교체 필요 - 에러 발생 여부에 따라 결정
 const hasModelError = false;
 
@@ -107,19 +116,27 @@ const ChatBubble = ({ message, isMessageGenerating = false }: ChatBubbleProps) =
                     직접 인용
                   </p>
                   <div className='flex flex-wrap gap-2'>
-                    {cited.map((source, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setSelectedSource(source)}
-                        className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-[13px] text-blue-700 hover:bg-blue-100 transition-colors cursor-pointer text-left'
-                      >
-                        <FileText className='w-3.5 h-3.5 flex-shrink-0 text-blue-400' />
-                        <span className='text-blue-600 font-medium text-[12px]'>
-                          [{source.index}]
-                        </span>
-                        <span className='truncate max-w-[200px]'>{source.title}</span>
-                      </button>
-                    ))}
+                    {cited.map((source, idx) => {
+                      const dotColor = getConfidenceDot(source);
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => setSelectedSource(source)}
+                          className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-[13px] text-blue-700 hover:bg-blue-100 transition-colors cursor-pointer text-left'
+                        >
+                          {dotColor && (
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dotColor}`}
+                            />
+                          )}
+                          <FileText className='w-3.5 h-3.5 flex-shrink-0 text-blue-400' />
+                          <span className='text-blue-600 font-medium text-[12px]'>
+                            [{source.index}]
+                          </span>
+                          <span className='truncate max-w-[200px]'>{source.title}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -130,21 +147,29 @@ const ChatBubble = ({ message, isMessageGenerating = false }: ChatBubbleProps) =
                     배경 참조
                   </p>
                   <div className='flex flex-wrap gap-2'>
-                    {background.map((source, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setSelectedSource(source)}
-                        className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-50 border border-neutral-200 text-[13px] text-neutral-500 hover:bg-neutral-100 transition-colors cursor-pointer text-left'
-                      >
-                        <BookOpen className='w-3.5 h-3.5 flex-shrink-0 text-neutral-300' />
-                        {source.index != null && (
-                          <span className='text-neutral-400 font-medium text-[12px]'>
-                            [{source.index}]
-                          </span>
-                        )}
-                        <span className='truncate max-w-[200px]'>{source.title}</span>
-                      </button>
-                    ))}
+                    {background.map((source, idx) => {
+                      const dotColor = getConfidenceDot(source);
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => setSelectedSource(source)}
+                          className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-50 border border-neutral-200 text-[13px] text-neutral-500 hover:bg-neutral-100 transition-colors cursor-pointer text-left'
+                        >
+                          {dotColor && (
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dotColor}`}
+                            />
+                          )}
+                          <BookOpen className='w-3.5 h-3.5 flex-shrink-0 text-neutral-300' />
+                          {source.index != null && (
+                            <span className='text-neutral-400 font-medium text-[12px]'>
+                              [{source.index}]
+                            </span>
+                          )}
+                          <span className='truncate max-w-[200px]'>{source.title}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}

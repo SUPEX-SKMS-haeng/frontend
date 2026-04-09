@@ -41,6 +41,8 @@ export interface ISource {
   bm25Rank?: number;
   vectorScore?: number;
   vectorRank?: number;
+  rerankerScore?: number;
+  rrfScore?: number;
   absoluteRelevance?: number;
   confidenceLevel?: 'high' | 'medium' | 'low';
 }
